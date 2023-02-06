@@ -1,5 +1,16 @@
 def btoi(a):
+    """
+    bin to dec (unsigned)
+    """
     return int(a, 2)
+
+def stoi(a, l):
+    """
+    bin to dec (signed)
+    """
+    sign = 1 << (l - 1)
+    uns = btoi(a)
+    return (uns & sign - 1) - (uns & sign)
 
 def _not_impl(t):
     print("Type " + t + " is not implemented")
@@ -37,7 +48,7 @@ def _sb(reg, instr):
 
 
     j_im = ''.join(im)
-    dec_im = int(j_im, 2)
+    dec_im = stoi(j_im, len(j_im))
 
     print("Immediate: " + j_im, "; " + str(dec_im) + " (offset: " + str(dec_im//4) + ")")
 
