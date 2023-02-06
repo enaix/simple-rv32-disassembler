@@ -31,13 +31,15 @@ def _sb(reg, instr):
     """
     im = []
     im.append(reg[0]) # imm[12]
-    im.append(reg[24]) # im[11]
     im += reg[1:7] # imm[10:5]
     im += reg[20:24] # imm[4:1]
+    im.append(reg[24]) # im[11]
+
 
     j_im = ''.join(im)
+    dec_im = int(j_im, 2)
 
-    print("Immediate: " + j_im, "; " + str(int(j_im, 2)))
+    print("Immediate: " + j_im, "; " + str(dec_im) + " (offset: " + str(dec_im//4) + ")")
 
 def _s(reg):
     """
