@@ -19,8 +19,23 @@ def _u(reg, instr, vb=False):
     """
     U-type
     """
-    _not_impl("U")
-    pass
+    if instr[0] == 'lui':
+        ins = 'lui'
+    elif instr[0] == 'auipc':
+        ins = 'auipc'
+    else:
+        ins = 'unknown'
+
+    im = reg[0:20]
+    j_im = ''.join(im)
+    dec_im = stoi(j_im, len(j_im))
+    
+    rd = ''.join(reg[20:25])
+
+    res = ins + " x"+str(btoi(rd)) + ' ' + str(dec_im)
+    if vb:
+        res += " (" + j_im + "; " + str(dec_im << 12) + " after shift)"
+    return res
 
 def _uj(reg, instr, vb=False):
     """
