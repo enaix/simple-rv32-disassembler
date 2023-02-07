@@ -15,7 +15,7 @@ def stoi(a, l):
 def _not_impl(t):
     print("Type " + t + " is not implemented")
 
-def _u(reg, instr, vb=False):
+def _u(reg, instr, vb=False, jump=False):
     """
     U-type
     """
@@ -34,10 +34,10 @@ def _u(reg, instr, vb=False):
 
     res = ins + " x"+str(btoi(rd)) + ", " + str(dec_im)
     if vb:
-        res += " (" + j_im + "; " + str(dec_im << 12) + " after shift)"
-    return res
+        res += " # (" + j_im + "; " + str(dec_im << 12) + " after shift)"
+    return res, None
 
-def _uj(reg, instr, vb=False):
+def _uj(reg, instr, vb=False, jump=False):
     """
     UJ-type
     """
@@ -52,12 +52,16 @@ def _uj(reg, instr, vb=False):
     dec_im = stoi(j_im, len(j_im))
     rd = ''.join(reg[20:25])
 
-    res = instr[0] + " x"+str(rd) + ", " + str(dec_im)
-    if vb:
-        res += " (" + j_im + "; offset: " + str(dec_im//4) + ")"
-    return res
+    jump_im = str(dec_im)
+    if jump:
+        jump_im = "@"
 
-def _i(reg, instr, vb=False):
+    res = instr[0] + " x"+str(rd) + ", " + jump_im
+    if vb:
+        res += " # (" + j_im + "; offset: " + str(dec_im//4) + ")"
+    return res, dec_im//4
+
+def _i(reg, instr, vb=False, jump=False):
     """
     I-type
     """
@@ -78,11 +82,10 @@ def _i(reg, instr, vb=False):
 
     res = ins + " x" + str(btoi(rd)) + ", x" + str(btoi(rs1)) + ", " + str(dec_im)
     if vb:
-        res += " (" + j_im + ')'
+        res += " # (" + j_im + ')'
+    return res, None
 
-    return res
-
-def _sb(reg, instr, vb=False):
+def _sb(reg, instr, vb=False, jump=False):
     """
     SB-type
     """
@@ -104,13 +107,16 @@ def _sb(reg, instr, vb=False):
     j_im = ''.join(im)
     dec_im = stoi(j_im, len(j_im))
 
-    res = ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im)
+    jump_im = str(dec_im)
+    if jump:
+        jump_im = "@"
+    res = ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + jump_im
     if vb:
-        res += " (" + j_im + "; offset: " + str(dec_im//4) + ")"
+        res += " # (" + j_im + "; offset: " + str(dec_im//4) + ")"
+    
+    return res, dec_im//4
 
-    return res
-
-def _s(reg, instr, vb=False):
+def _s(reg, instr, vb=False, jump=False):
     """
     S-type
     """
@@ -130,19 +136,21 @@ def _s(reg, instr, vb=False):
 
     res = ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im)
     if vb:
-        res += " (" + j_im + "; mem offset: " + str(dec_im//4) + ')'
-    return res
+        res += " # (" + j_im + "; mem offset: " + str(dec_im//4) + ')'
+    return res, None
 
-def _r(reg, instr, vb=False):
+def _r(reg, instr, vb=False, jump=False):
     """
     R-type
     """
     f7 = ''.join(reg[0:7])
+    shamt = False
     if type(instr) == list and instr[0] == 'srl_i':
         if btoi(f7) == 0:
             ins = 'srli'
         else:
             ins = 'srai'
+        shamt = True
     else:
         ins_d = instr.get(''.join(reg[17:20]))
         if ins_d is None:
@@ -160,11 +168,13 @@ def _r(reg, instr, vb=False):
     rd = ''.join(reg[20:25])
 
     res = ins + " x"+str(btoi(rd)) + ", x"+str(btoi(rs1)) + ", x"+str(btoi(rs2))
-    return res
+    if shamt:
+        res = ins + " x"+str(btoi(rd)) + ", x"+str(btoi(rs1)) + ", "+str(btoi(rs2))
+    return res, None
 
-def _r_i(reg, instr, vb=False):
+def _r_i(reg, instr, vb=False, jump=False):
     """
-    R-type and I-type
+    I-type (with func7)
     """
     ins = instr.get(''.join(reg[17:20]))
 
@@ -175,20 +185,20 @@ def _r_i(reg, instr, vb=False):
 
     return _i(reg, [ins], vb)
 
-def _fence(reg, instr, vb=False):
+def _fence(reg, instr, vb=False, jump=False):
     """
     Fence instruction
     """
     _not_impl("fence")
-    pass
+    return None, None
 
-def _ec_br(reg, instr, vb=False):
+def _ec_br(reg, instr, vb=False, jump=False):
     """
     Ecall/Ebreak instructions
     """
     if btoi(''.join(reg[0:12])) == 0:
-        return "ecall"
-    return "ebreak"
+        return "ecall", None
+    return "ebreak", None
 
 rv32m_opcodes = {btoi('0110111'): (_u, ['lui']), btoi('0010111'): (_u, ['auipc']),
                  btoi('1101111'): (_uj, ['jal']), btoi('1100111'): (_i, ['jalr']),
