@@ -57,7 +57,7 @@ def main():
             while pc < len(res):
                 l, jump = res[pc]
 
-                if jump is not None:
+                if jump is not None and not jump == -1:
                     addr = pc + jump
                     if addr > 0 and addr < len(res):
                         if res[addr][1] is None or not res[addr][1] == -1: # not a label
