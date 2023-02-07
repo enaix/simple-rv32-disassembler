@@ -54,25 +54,27 @@ def main():
         if not args.nolabel:
             label_i = 0
             pc = 0
+            labels = {}
             while pc < len(res):
                 l, jump = res[pc]
 
-                if jump is not None and not jump == -1:
+                if jump is not None:
                     addr = pc + jump
                     if addr > 0 and addr < len(res):
-                        if res[addr][1] is None or not res[addr][1] == -1: # not a label
+                        if labels.get(addr) is None:
                             label_name = "label" + str(label_i)
-                            res.insert(addr, (label_name + ":", -1))
-                            if jump < 0:
-                                pc += 1
-
+                            labels[addr] = label_name
                             label_i += 1
                         else:
-                            label_name = res[addr][0][:-1]
+                            label_name = labels[addr]
                             
                         res[pc] = (l.replace("@", label_name, 1), None) # replace with label name
                 pc += 1
             
+            # Moving in reverse in order to avoid placement errors
+            for l in [(key, value) for key, value in sorted(labels.items(), reverse=True, key=lambda x: x[0])]:
+                res.insert(l[0], (l[1] + ":", None))
+
             print("main:") # entry point
             
         for l in res:
