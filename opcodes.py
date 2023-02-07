@@ -42,15 +42,18 @@ def _sb(reg, instr):
     """
     im = []
     im.append(reg[0]) # imm[12]
+    im.append(reg[24]) # im[11]
     im += reg[1:7] # imm[10:5]
     im += reg[20:24] # imm[4:1]
-    im.append(reg[24]) # im[11]
+    im.append('0') # imm[0]
 
+    rs2 = ''.join(reg[7:12])
+    rs1 = ''.join(reg[12:17])
 
     j_im = ''.join(im)
     dec_im = stoi(j_im, len(j_im))
 
-    print("Immediate: " + j_im, "; " + str(dec_im) + " (offset: " + str(dec_im//4) + ")")
+    print("x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im) + " (" + j_im + ", offset: " + str(dec_im//4) + ")")
 
 def _s(reg):
     """
