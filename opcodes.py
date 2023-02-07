@@ -50,10 +50,15 @@ def _sb(reg, instr):
     rs2 = ''.join(reg[7:12])
     rs1 = ''.join(reg[12:17])
 
+    ins = instr.get(''.join(reg[17:20]))
+
+    if ins is None:
+        ins = "unknown"
+
     j_im = ''.join(im)
     dec_im = stoi(j_im, len(j_im))
 
-    print("x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im) + " (" + j_im + ", offset: " + str(dec_im//4) + ")")
+    print(ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im) + " (" + j_im + ", offset: " + str(dec_im//4) + ")")
 
 def _s(reg):
     """
@@ -92,7 +97,8 @@ def _ec_br(reg):
 
 rv32m_opcodes = {btoi('0110111'): (_u, ['lui']), btoi('0010111'): (_u, ['auipc']),
                  btoi('1101111'): (_uj, ['jal']), btoi('1100111'): (_i, ['jalr']),
-                 btoi('1100011'): (_sb, []), btoi('0000011'): (_i, []),
+                 btoi('1100011'): (_sb, {'000': 'beq', '001': 'bne', '100': 'blt', '101': 'bge', '110': 'bltu', '111': 'bgeu'}),
+                 btoi('0000011'): (_i, []),
                  btoi('0100011'): (_s, []), btoi('0010011'): (_r_i, []),
                  btoi('0110011'): (_r, []), btoi('0001111'): (_fence, ['fence']),
                  btoi('1110011'): (_ec_br, [])}
