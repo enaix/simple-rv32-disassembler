@@ -38,7 +38,7 @@ def main():
             if s[0][:2] == "0x":
                 ans = decode_rv32(s[0], args.verbose)
                 if ans is not None:
-                    print(ans, ' '.join(s[1:]))
+                    print(ans + "  #", ' '.join(s[1:]))
             elif not s == []:
                 print(l)
 
