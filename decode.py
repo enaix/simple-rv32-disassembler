@@ -28,7 +28,7 @@ def main():
     args = parser.parse_args()
 
     if args.register[:2] == "0x":
-        ans = decode_rv32(args.register, args.verbose, False)
+        ans, _ = decode_rv32(args.register, args.verbose, False)
         if ans is not None:
             print(ans)
 
