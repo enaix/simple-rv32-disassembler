@@ -76,7 +76,7 @@ def _i(reg, instr, vb=False):
     j_im = ''.join(im)
     dec_im = stoi(j_im, len(j_im))
 
-    res = ins + ' ' + str(btoi(rd)) + ", " + str(btoi(rs1)) + ", " + str(dec_im)
+    res = ins + " x" + str(btoi(rd)) + ", x" + str(btoi(rs1)) + ", " + str(dec_im)
     if vb:
         res += " (" + j_im + ')'
 
@@ -138,7 +138,7 @@ def _r(reg, instr, vb=False):
     R-type
     """
     f7 = ''.join(reg[0:7])
-    if type(instr) == list and instr[0] == 'sr_i':
+    if type(instr) == list and instr[0] == 'srl_i':
         if btoi(f7) == 0:
             ins = 'srli'
         else:
@@ -170,7 +170,7 @@ def _r_i(reg, instr, vb=False):
 
     if ins is None:
         ins = "unknown"
-    elif ins in ['slli', 'slr_i']:
+    elif ins in ['slli', 'srl_i']:
         return _r(reg, [ins], vb)
 
     return _i(reg, [ins], vb)
@@ -195,7 +195,7 @@ rv32m_opcodes = {btoi('0110111'): (_u, ['lui']), btoi('0010111'): (_u, ['auipc']
                  btoi('1100011'): (_sb, {'000': 'beq', '001': 'bne', '100': 'blt', '101': 'bge', '110': 'bltu', '111': 'bgeu'}),
                  btoi('0000011'): (_i, {'000': 'lb', '001': 'lh', '010': 'lw', '100': 'lbu', '101': 'lhu'}),
                  btoi('0100011'): (_s, {'000': 'sb', '001': 'sh', '010': 'sw'}),
-                 btoi('0010011'): (_r_i, {'000': 'addi', '010': 'slti', '011': 'sltiu', '100': 'xori', '110': 'ori', '111': 'andi', '001': 'slli', '101': 'sr_i'}),
+                 btoi('0010011'): (_r_i, {'000': 'addi', '010': 'slti', '011': 'sltiu', '100': 'xori', '110': 'ori', '111': 'andi', '001': 'slli', '101': 'srl_i'}),
                  btoi('0110011'): (_r, {'000': {0: 'add', 1: 'sub'}, '001': 'sll', '010': 'slt', '011': 'sltu', '100': 'xor', '101': {0: 'srl', 1: 'sra'}, '110': 'or', '111': 'and'}),
                  btoi('0001111'): (_fence, ['fence']),
                  btoi('1110011'): (_ec_br, [])}
