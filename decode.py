@@ -1,7 +1,8 @@
 import sys
+import argparse
 from opcodes import *
 
-def decode_rv32(reg):
+def decode_rv32(reg, verbose):
     """
     Decode RV32 instruction
     """
@@ -15,16 +16,17 @@ def decode_rv32(reg):
         print("Could not decode")
         return
 
-    handler(l, instr)
+    ans = handler(l, instr, verbose)
+    if ans is not None:
+        print(ans)
 
 def main():
-    if len(sys.argv) == 1:
-        print("Usage: decode.py 0x...")
-        print("Will add reading from file option later")
-        return
-    instr = sys.argv[1]
-    
-    decode_rv32(instr)
+    parser = argparse.ArgumentParser(prog='decode.py', description='Simple RV32 decompiler')
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose output')
+    parser.add_argument('register', help='register to decode (or file)', metavar='register/file')
+    args = parser.parse_args()
+
+    decode_rv32(args.register, args.verbose)
 
 
 if __name__ == "__main__":

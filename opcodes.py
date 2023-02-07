@@ -15,28 +15,28 @@ def stoi(a, l):
 def _not_impl(t):
     print("Type " + t + " is not implemented")
 
-def _u(reg):
+def _u(reg, instr, vb=False):
     """
     U-type
     """
     _not_impl("U")
     pass
 
-def _uj(reg):
+def _uj(reg, instr, vb=False):
     """
     UJ-type
     """
     _not_impl("UJ")
     pass
 
-def _i(reg):
+def _i(reg, instr, vb=False):
     """
     I-type
     """
     _not_impl("I")
     pass
 
-def _sb(reg, instr):
+def _sb(reg, instr, vb=False):
     """
     SB-type
     """
@@ -58,37 +58,41 @@ def _sb(reg, instr):
     j_im = ''.join(im)
     dec_im = stoi(j_im, len(j_im))
 
-    print(ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im) + " (" + j_im + ", offset: " + str(dec_im//4) + ")")
+    res = ins + " x"+str(btoi(rs1)) + ", x"+str(btoi(rs2)) + ", " + str(dec_im)
+    if vb:
+        res += " (" + j_im + ", offset: " + str(dec_im//4) + ")"
 
-def _s(reg):
+    return res
+
+def _s(reg, instr, vb=False):
     """
     S-type
     """
     _not_impl("S")
     pass
 
-def _r(reg):
+def _r(reg, instr, vb=False):
     """
     R-type
     """
     _not_impl("R")
     pass
 
-def _r_i(reg):
+def _r_i(reg, instr, vb=False):
     """
     R-type and I-type
     """
     _not_impl("R/I")
     pass
 
-def _fence(reg):
+def _fence(reg, instr, vb=False):
     """
     Fence instruction
     """
     _not_impl("fence")
     pass
 
-def _ec_br(reg):
+def _ec_br(reg, instr, vb=False):
     """
     Ecall/Ebreak instructions
     """
